@@ -661,6 +661,10 @@
     $("#btnRegenChapter").addEventListener("click", regenChapter);
     $("#btnNextChapter").addEventListener("click", nextChapter);
     $("#btnGenRest").addEventListener("click", genRest);
+    $("#btnExpand").addEventListener("click", () => {
+      const full = el.studio.classList.toggle("full");
+      $("#btnExpand").textContent = full ? "⛶ 收起编辑" : "⛶ 展开编辑";
+    });
 
     $("#btnRegen").addEventListener("click", () => buildOutline());
     $("#btnRerollTitle").addEventListener("click", () => {
@@ -729,4 +733,5 @@
 
   document.addEventListener("DOMContentLoaded", init);
 })();
+
 

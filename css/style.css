@@ -420,3 +420,10 @@ h1, h2, h3, h4 { margin: 0; font-family: var(--serif); font-weight: 700; line-he
 }
 .oe-add:hover { border-color: var(--accent); color: var(--accent); background: var(--accent-soft); }
 
+
+/* 章节编辑框：可自由拉宽 + 全屏展开 */
+#chapterContent { resize: both; min-height: 440px; overflow: auto; }
+#studio.full .container { max-width: none; }
+#studio.full .studio-card { max-width: none; }
+#studio.full #chapterContent { min-height: 70vh; }
+#studio.full .studio-actions { position: sticky; bottom: 0; background: var(--card); padding: 10px 0; }
