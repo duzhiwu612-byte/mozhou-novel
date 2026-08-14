@@ -161,6 +161,34 @@ window.MozhouWriter = (function () {
     `远处，一声钟响悠然荡开，像是某种信号。{place}内外，无数道目光同时亮起。`,
     `就在所有人以为尘埃落定之际，{item}忽然剧烈震颤起来，指向了一个谁也没想到的方向。`
   ];
+  const EMOTIONS = [
+    `心底那根弦被轻轻拨动，{protagonist}面上不显，指尖却不易察觉地颤了一下。`,
+    `一股无名火直往上冲，{protagonist}深吸了好几口气，才勉强把翻涌的情绪压下去。`,
+    `眼眶忽然有些发酸，{protagonist}别过脸去，不愿让人看见这一刻的失态。`,
+    `喜悦来得太突然，{protagonist}怔了一瞬，嘴角才后知后觉地扬起。`,
+    `旧事像潮水般漫上来，{protagonist}闭上眼，许久，才重新睁开，目光已恢复平静。`,
+    `那种被人算计的寒意从脊背窜起，{protagonist}的手不自觉地按在了{item}上。`,
+    `释然也好，不甘也罢，{protagonist}只觉胸口那团浊气，终于散了大半。`,
+    `悲恸与愤怒交织，{protagonist}反而笑了，那笑容里没有半分温度。`
+  ];
+
+  const DESCRIPTIONS = [
+    `风卷起衣角，吹乱了几缕发丝。{protagonist}伸手拢了拢，动作极轻，却透着不容置疑的镇定。`,
+    `日头西斜，把{place}的影子拉得老长。{protagonist}踩着满地碎金，一步步走得极稳。`,
+    `指尖拂过{item}，触感冰凉，又隐隐透着一丝温热，像极了一段说不清道不明的旧事。`,
+    `檐下的灯笼随风轻晃，光影在{protagonist}脸上明灭不定，映得那双眼格外深邃。`,
+    `茶凉了。{protagonist}端起杯盏，就着凉茶慢慢饮尽，仿佛要把所有杂念一并吞下。`,
+    `远处人声渐起，{protagonist}却像置身事外，只专注地看着自己的手，一遍遍摩挲着{place}的旧痕。`,
+    `一炷香，又燃到了尽头。{protagonist}静静看着香灰落下，心里却已转过了千百个念头。`,
+    `雪粒子簌簌落下，落在肩头又化开。{protagonist}呵出一口白气，目光穿过风雪，望向来处。`
+  ];
+
+  const CUSTOM_BANK = [
+    `而「{custom}」三个字，像一颗种子，在{protagonist}心底悄然生根。`,
+    `说来也怪，自打「{custom}」进入生活，{protagonist}的每一步，都像被一只无形的手推着向前。`,
+    `旁人只当是玩笑，唯有{protagonist}明白，「{custom}」才是这局棋里真正的关键。`,
+    `夜深人静时，{protagonist}总忍不住琢磨「{custom}」，越想，越觉得其中藏着天大的玄机。`
+  ];
   function events(ch) {
     return [
       `${ch.summary}`,
@@ -199,10 +227,13 @@ window.MozhouWriter = (function () {
 
     paras.push(fill(pick(rng, OPENERS), ctx));
     addN(SCENES, 5);
+    addN(DESCRIPTIONS, 2);
     const ev = events(ch); addN(ev, 5);
     addN(ACTIONS, 5);
     addN(DIALOGUES, 6);
     addN(THOUGHTS, 6);
+    addN(EMOTIONS, 2);
+    if (ctx.custom) { addN(CUSTOM_BANK, 2); }
     addN(CONFLICTS, 6);
     addN(POWERUPS, 3);
     addN(ATMOS, 5);

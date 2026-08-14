@@ -427,3 +427,40 @@ h1, h2, h3, h4 { margin: 0; font-family: var(--serif); font-weight: 700; line-he
 #studio.full .studio-card { max-width: none; }
 #studio.full #chapterContent { min-height: 70vh; }
 #studio.full .studio-actions { position: sticky; bottom: 0; background: var(--card); padding: 10px 0; }
+
+/* 自定义关键词输入 */
+.kw-custom { display: flex; gap: 8px; align-items: center; }
+.kw-custom input {
+  width: 210px; border: 1px solid var(--line-2); border-radius: 999px;
+  padding: 8px 14px; font-size: 14px; font-family: inherit; color: var(--ink); background: #fff;
+}
+.kw-custom input:focus { outline: none; border-color: var(--accent); }
+
+/* 章节拖拽排序 */
+.oe-item[draggable="true"] { cursor: grab; }
+.oe-item.dragging { opacity: .45; }
+.oe-item.drag-over { border-color: var(--accent); box-shadow: 0 0 0 2px var(--accent-soft); }
+.oe-drag { color: var(--ink-3); font-size: 16px; padding: 0 2px; cursor: grab; }
+
+/* 意见反馈弹窗 */
+.feedback { position: fixed; inset: 0; z-index: 110; display: grid; place-items: center; padding: 20px; }
+.feedback-backdrop { position: absolute; inset: 0; background: rgba(33,30,26,.55); backdrop-filter: blur(4px); animation: fadeIn .3s ease; }
+.feedback-dialog {
+  position: relative; width: min(520px, 100%); background: var(--card);
+  border-radius: 20px; padding: 24px 26px 26px; box-shadow: var(--shadow-lg);
+  animation: popIn .4s cubic-bezier(.2,.8,.25,1); display: flex; flex-direction: column; gap: 8px;
+}
+.feedback-head { display: flex; align-items: center; justify-content: space-between; margin-bottom: 6px; }
+.feedback-head h3 { font-size: 21px; }
+.feedback-head button { border: 0; background: none; font-size: 24px; color: var(--ink-3); line-height: 1; }
+.feedback-head button:hover { color: var(--accent); }
+.feedback label { font-size: 12px; letter-spacing: 2px; color: var(--ink-3); }
+.feedback input, .feedback textarea {
+  font-family: inherit; font-size: 14px; color: var(--ink); border: 1px solid var(--line-2);
+  border-radius: 10px; padding: 10px 12px; background: var(--paper); resize: vertical;
+}
+.feedback input:focus, .feedback textarea:focus { outline: none; border-color: var(--accent); background: #fff; }
+.feedback-actions { display: flex; gap: 10px; justify-content: flex-end; margin-top: 10px; flex-wrap: wrap; }
+
+.btn:disabled { opacity: .45; cursor: not-allowed; box-shadow: none; }
+.kw-selected-chip.custom-chip { background: #e6eef0; color: #2f6f75; }

@@ -195,8 +195,8 @@ window.MozhouEngine = (function () {
     return best || "xianxia";
   }
 
-  function deriveContext(keywords, params) {
-    const rng = makeRng(keywords.join("|") + "|" + JSON.stringify(params));
+  function deriveContext(keywords, params, seed, custom) {
+    const rng = makeRng((seed || keywords.join("|")) + "|ctx|" + JSON.stringify(params));
     const genre = detectGenre(keywords);
     const genreName = GENRE_NAMES[genre] || "原创故事";
 
@@ -242,11 +242,12 @@ window.MozhouEngine = (function () {
     // 设定词
     const settingKws = keywords.filter(kw => D.KEYWORDS.setting.includes(kw));
     const setting = settingKws.length ? settingKws.join("、") : "逆风翻盘";
+    const customStr = (custom && custom.length) ? custom.join("、") : "";
 
     return {
       genre, genreName, keywords, params,
       world, hero, heroName, partnerName, protagonist, ta,
-      villain, conflict, relation, bond, item, place, goal, tone, ending, setting
+      villain, conflict, relation, bond, item, place, goal, tone, ending, setting, custom: customStr
     };
   }
 
@@ -568,11 +569,12 @@ window.MozhouEngine = (function () {
 
   /* ---------- 主入口 ---------- */
   function buildProject(input) {
-    const keywords = (input.keywords || []).slice(0, 8);
+    const keywords = (input.keywords || []).slice(0, 15);
     const params = Object.assign({ length: "medium", pov: "third", tone: "auto", ending: "he" }, input.params || {});
     const seed = input.seed || (Date.now() + "-" + keywords.join(","));
+    const custom = (input.custom || []).slice(0, 10);
     const rng = makeRng(seed);
-    const ctx = deriveContext(keywords, params);
+    const ctx = deriveContext(keywords, params, seed, custom);
 
     const titles = genTitles(ctx, rng);
     const logline = genLogline(ctx, rng);
@@ -625,4 +627,5 @@ window.MozhouEngine = (function () {
 
   return { generate, buildProject, generateChapter, assemble, toText, toMarkdown, makeRng, hashString };
 })();
+
 

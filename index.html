@@ -35,6 +35,7 @@
         <a href="#params">创作设定</a>
         <a href="#result">我的作品</a>
       </nav>
+      <button class="btn btn-ghost btn-sm" id="btnFeedback" type="button">意见反馈</button>
       <button class="btn btn-ghost btn-sm" id="btnHelp" type="button">使用帮助</button>
     </div>
   </header>
@@ -106,6 +107,7 @@
 
         <div class="kw-toolbar">
           <div class="kw-tabs" id="kwTabs" role="tablist" aria-label="关键词分类"></div>
+          <div class="kw-custom"><input id="kwCustomInput" type="text" placeholder="输入自定义关键词" maxlength="12" /><button class="btn btn-ghost btn-sm" id="btnAddCustom" type="button">＋ 添加</button></div>
           <button class="btn btn-ghost btn-sm" id="btnRandomMix" type="button">🎲 随机搭配</button>
         </div>
 
@@ -198,6 +200,7 @@
             <p class="outline-editor-hint">点击章节标题或梗概即可编辑</p>
             <div class="outline-editor" id="outlineEditor"></div>
             <div class="studio-actions">
+              <button class="btn btn-ghost" id="btnBackToKeywords" type="button">← 返回修改关键词</button>
               <button class="btn btn-primary" id="btnGenAll" type="button">直接生成全文 ✦</button>
               <button class="btn btn-ghost" id="btnStartChapters" type="button">开始逐章生成</button>
             </div>
@@ -209,6 +212,7 @@
               <p class="section-kicker">创作工作台 · 第二步</p>
               <h2 class="section-title">逐章精修</h2>
               <p class="section-sub" id="chapterProgress">第 1 / 12 章</p>
+              <p class="section-sub" id="chapterWordCount" style="font-size:13px;color:var(--ink-3);"></p>
             </div>
             <div class="chapter-editor">
               <div class="field">
@@ -221,6 +225,7 @@
               </div>
             </div>
             <div class="studio-actions">
+              <button class="btn btn-ghost" id="btnPrevChapter" type="button">← 上一章</button>
               <button class="btn btn-ghost" id="btnExpand" type="button">⛶ 展开编辑</button>
               <button class="btn btn-ghost" id="btnRegenChapter" type="button">↻ 重新生成本章</button>
               <button class="btn btn-primary" id="btnNextChapter" type="button">采用本章，生成下一章</button>
@@ -283,6 +288,24 @@
     </div>
   </footer>
 
+  <!-- 意见反馈弹窗 -->
+  <div class="feedback" id="feedback" hidden>
+    <div class="feedback-backdrop" id="feedbackBackdrop"></div>
+    <div class="feedback-dialog">
+      <div class="feedback-head"><h3>意见反馈</h3><button id="feedbackClose" type="button">×</button></div>
+      <label for="fbContact">联系方式（可选）</label>
+      <input id="fbContact" type="text" placeholder="微信 / 邮箱，方便回复你" />
+      <label for="fbEmail">接收邮箱（你的邮箱）</label>
+      <input id="fbEmail" type="text" placeholder="填写你的邮箱，用于接收反馈" />
+      <label for="fbContent">反馈内容</label>
+      <textarea id="fbContent" rows="5" placeholder="说说你的建议或遇到的问题…"></textarea>
+      <div class="feedback-actions">
+        <button class="btn btn-ghost btn-sm" id="btnFbCopy" type="button">复制反馈内容</button>
+        <button class="btn btn-primary btn-sm" id="btnFbMail" type="button">发送邮件给我</button>
+      </div>
+    </div>
+  </div>
+
   <!-- 新手引导浮层 -->
   <div class="tour" id="tour" hidden>
     <div class="tour-backdrop"></div>
@@ -312,6 +335,7 @@
   <script src="js/app.js"></script>
 </body>
 </html>
+
 
 
 

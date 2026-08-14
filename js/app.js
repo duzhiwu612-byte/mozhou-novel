@@ -14,6 +14,7 @@
   const LS_PARAMS = "mozhou_params";
   const LS_TOUR = "mozhou_tour_seen";
   const LS_DRAFT = "mozhou_draft";
+  const LS_CUSTOM = "mozhou_custom";
 
   const state = {
     activeCat: "world",
@@ -22,6 +23,8 @@
     project: null,
     outline: [],
     chapters: [],
+    custom: [],
+    dragChapterIndex: null,
     cursor: 0,
     mode: "idle",    // idle | outline | chapter | done
     result: null,
@@ -43,6 +46,10 @@
     bookTitle: $("#bookTitle"), bookLogline: $("#bookLogline"), bookSynopsis: $("#bookSynopsis"),
     outlineEditor: $("#outlineEditor"),
     chapterProgress: $("#chapterProgress"), chapterTitle: $("#chapterTitle"), chapterContent: $("#chapterContent"),
+    chapterWordCount: $("#chapterWordCount"), kwCustomInput: $("#kwCustomInput"), btnAddCustom: $("#btnAddCustom"),
+    btnPrevChapter: $("#btnPrevChapter"), btnBackToKeywords: $("#btnBackToKeywords"),
+    feedback: $("#feedback"), fbContact: $("#fbContact"), fbEmail: $("#fbEmail"), fbContent: $("#fbContent"),
+    btnFbCopy: $("#btnFbCopy"), btnFbMail: $("#btnFbMail"),
     toast: $("#toast"), tour: $("#tour"), tourArt: $("#tourArt"),
     tourStepLabel: $("#tourStep"), tourTitle: $("#tourTitle"), tourText: $("#tourText"),
     tourDots: $("#tourDots"), tourNext: $("#tourNext"), tourSkip: $("#tourSkip")
@@ -62,6 +69,7 @@
     try {
       localStorage.setItem(LS_SELECTED, JSON.stringify([...state.selected]));
       localStorage.setItem(LS_PARAMS, JSON.stringify(state.params));
+      localStorage.setItem(LS_CUSTOM, JSON.stringify(state.custom));
     } catch (e) { /* ignore */ }
   }
   function loadState() {
@@ -70,6 +78,8 @@
       if (Array.isArray(s)) s.forEach(k => state.selected.add(k));
       const p = JSON.parse(localStorage.getItem(LS_PARAMS) || "{}");
       state.params = Object.assign(state.params, p);
+      const cc = JSON.parse(localStorage.getItem(LS_CUSTOM) || "[]");
+      if (Array.isArray(cc)) state.custom = cc;
     } catch (e) { /* ignore */ }
   }
 
@@ -174,14 +184,39 @@
   function updateSelected() {
     const arr = [...state.selected];
     el.selectedCount.textContent = `${arr.length} / ${MAX_KW}`;
-    el.selectedChips.innerHTML = arr.map(w =>
+    const libChips = arr.map(w =>
       `<span class="kw-selected-chip">${w}<button data-remove="${w}" type="button">×</button></span>`
-    ).join("") || `<span style="color:var(--ink-3);font-size:13px;">点击上方关键词卡片进行勾选</span>`;
+    ).join("");
+    const customChips = state.custom.map(w =>
+      `<span class="kw-selected-chip custom-chip">${w}<button data-custom-remove="${w}" type="button">×</button></span>`
+    ).join("");
+    el.selectedChips.innerHTML = (libChips + customChips) || `<span style="color:var(--ink-3);font-size:13px;">点击上方关键词卡片进行勾选</span>`;
     $$("#kwSelectedChips [data-remove]").forEach(btn => {
       btn.addEventListener("click", () => toggleKeyword(btn.dataset.remove));
     });
-    el.generateSummary.textContent = arr.length ? `已选：${arr.join(" · ")}` : "尚未选择关键词";
+    $$("#kwSelectedChips [data-custom-remove]").forEach(btn => {
+      btn.addEventListener("click", () => removeCustomKeyword(btn.dataset.customRemove));
+    });
+    const parts = [];
+    if (arr.length) parts.push(arr.join(" · "));
+    if (state.custom.length) parts.push("自定义：" + state.custom.join(" · "));
+    el.generateSummary.textContent = parts.length ? "已选：" + parts.join(" ｜ ") : "尚未选择关键词";
     saveState();
+  }
+
+  function addCustomKeyword() {
+    const raw = el.kwCustomInput.value.trim();
+    if (!raw) { toast("请输入关键词"); return; }
+    if (state.selected.has(raw) || state.custom.includes(raw)) { toast("该关键词已存在"); return; }
+    if (state.custom.length >= 10) { toast("自定义关键词最多 10 个"); return; }
+    state.custom.push(raw);
+    el.kwCustomInput.value = "";
+    updateSelected();
+    toast(`已添加自定义关键词「${raw}」`);
+  }
+  function removeCustomKeyword(w) {
+    state.custom = state.custom.filter(k => k !== w);
+    updateSelected();
   }
 
   function randomMix() {
@@ -242,7 +277,7 @@
   function buildOutline() {
     let kws = currentKeywords();
     if (!kws.length) { randomMix(); kws = currentKeywords(); }
-    state.project = Engine.buildProject({ keywords: kws, params: state.params, seed: Date.now() + "-" + kws.join(",") });
+    state.project = Engine.buildProject({ keywords: kws, params: state.params, seed: Date.now() + "-" + kws.join(","), custom: state.custom });
     state.outline = JSON.parse(JSON.stringify(state.project.outline));
     state.chapters = [];
     state.cursor = 0;
@@ -263,7 +298,8 @@
   function renderOutlineEditor() {
     const items = state.outline.map(o => {
       if (o.type === "act") return `<div class="oe-act">${escapeHtml(o.title)}</div>`;
-      return `<div class="oe-item" data-chapter-index="${o.index}">
+      return `<div class="oe-item" data-chapter-index="${o.index}" draggable="true">
+        <span class="oe-drag" title="拖拽排序">⠿</span>
         <span class="oe-index">${o.index}</span>
         <div class="oe-fields">
           <input data-field="title" value="${escapeHtml(o.title)}" />
@@ -276,11 +312,51 @@
     el.bookTitle.value = state.project.titles[0];
     el.bookLogline.value = state.project.logline;
     el.bookSynopsis.value = state.project.synopsis;
-    $$("#outlineEditor .oe-del").forEach(btn => {
-      btn.addEventListener("click", () => deleteChapter(Number(btn.dataset.del)));
+    $$("#outlineEditor .oe-del").forEach(btn => btn.addEventListener("click", () => deleteChapter(Number(btn.dataset.del))));
+    const addBtn = $("#oeAdd"); if (addBtn) addBtn.addEventListener("click", addChapter);
+    bindDragSort();
+  }
+
+  function bindDragSort() {
+    $$("#outlineEditor .oe-item").forEach(item => {
+      item.addEventListener("dragstart", (e) => {
+        state.dragChapterIndex = Number(item.dataset.chapterIndex);
+        item.classList.add("dragging");
+        e.dataTransfer.effectAllowed = "move";
+        try { e.dataTransfer.setData("text/plain", String(state.dragChapterIndex)); } catch (err) {}
+      });
+      item.addEventListener("dragover", (e) => { e.preventDefault(); item.classList.add("drag-over"); });
+      item.addEventListener("dragleave", () => item.classList.remove("drag-over"));
+      item.addEventListener("drop", (e) => {
+        e.preventDefault();
+        item.classList.remove("drag-over");
+        const target = Number(item.dataset.chapterIndex);
+        if (state.dragChapterIndex != null && target !== state.dragChapterIndex) {
+          readOutlineEditor();
+          reorderChapters(state.dragChapterIndex, target);
+          renderOutlineEditor();
+          saveDraft();
+          toast("章节顺序已调整");
+        }
+      });
+      item.addEventListener("dragend", () => {
+        item.classList.remove("dragging");
+        $$("#outlineEditor .oe-item").forEach(i => i.classList.remove("drag-over"));
+        state.dragChapterIndex = null;
+      });
     });
-    const addBtn = $("#oeAdd");
-    if (addBtn) addBtn.addEventListener("click", addChapter);
+  }
+
+  function reorderChapters(dragIdx, targetIdx) {
+    const dragItem = state.outline.find(o => o.type === "chapter" && o.index === dragIdx);
+    const targetItem = state.outline.find(o => o.type === "chapter" && o.index === targetIdx);
+    if (!dragItem || !targetItem) return;
+    const rest = state.outline.filter(o => !(o.type === "chapter" && o.index === dragIdx));
+    const pos = rest.findIndex(o => o.type === "chapter" && o.index === targetIdx);
+    rest.splice(pos, 0, dragItem);
+    state.outline = rest;
+    reindexOutline();
+    state.project.outline = state.outline;
   }
 
   function readOutlineEditor() {
@@ -351,6 +427,8 @@
     el.chapterTitle.value = ch.title;
     el.chapterContent.value = ch.paragraphs.join("\n\n");
     $("#btnNextChapter").textContent = (i === total - 1) ? "采用本章，完成小说" : "采用本章，生成下一章";
+    el.btnPrevChapter.disabled = (i === 0);
+    updateWordCount();
   }
 
   function saveCurrentChapter() {
@@ -417,6 +495,51 @@
     saveDraft();
   }
 
+  function updateWordCount() {
+    const cur = (el.chapterContent.value || "").replace(/\s/g, "").length;
+    let total = 0;
+    state.chapters.forEach(ch => { if (ch && ch.paragraphs) ch.paragraphs.forEach(p => total += p.replace(/\s/g, "").length); });
+    el.chapterWordCount.textContent = `本章 ${cur} 字 · 全书已写约 ${total} 字`;
+  }
+
+  function prevChapter() {
+    if (state.cursor <= 0) return;
+    saveCurrentChapter();
+    const items = chapterItemsOf(state.project.outline);
+    const total = items.length;
+    state.cursor--;
+    const ch = state.chapters[state.cursor];
+    if (ch) renderChapterStage(ch, state.cursor, total);
+    else generateChapterAt(state.cursor);
+  }
+
+  /* ---------- 意见反馈 ---------- */
+  function openFeedback() {
+    el.feedback.hidden = false;
+    const saved = (() => { try { return localStorage.getItem("mozhou_fb_email"); } catch (e) { return ""; } })();
+    if (saved) el.fbEmail.value = saved;
+  }
+  function closeFeedback() { el.feedback.hidden = true; }
+  function feedbackPayload() {
+    return { contact: el.fbContact.value.trim(), content: el.fbContent.value.trim() };
+  }
+  function copyFeedback() {
+    const p = feedbackPayload();
+    if (!p.content) { toast("请先填写反馈内容"); return; }
+    const text = `【墨舟小说创作台 · 用户反馈】\n联系方式：${p.contact || "未填写"}\n反馈内容：\n${p.content}\n`;
+    copyText(text, "已复制反馈内容，可粘贴发送给我");
+  }
+  function mailFeedback() {
+    const p = feedbackPayload();
+    if (!p.content) { toast("请先填写反馈内容"); return; }
+    const email = el.fbEmail.value.trim();
+    if (!email) { toast("请先填写接收邮箱"); return; }
+    try { localStorage.setItem("mozhou_fb_email", email); } catch (e) {}
+    const subject = encodeURIComponent("墨舟小说创作台 · 用户反馈");
+    const body = encodeURIComponent(`联系方式：${p.contact || "未填写"}\n\n反馈内容：\n${p.content}`);
+    window.location.href = `mailto:${email}?subject=${subject}&body=${body}`;
+    toast("已打开邮件客户端");
+  }
   /* ---------- 渲染最终结果 ---------- */
   function renderResult() {
     const r = state.result;
@@ -661,6 +784,16 @@
     $("#btnRegenChapter").addEventListener("click", regenChapter);
     $("#btnNextChapter").addEventListener("click", nextChapter);
     $("#btnGenRest").addEventListener("click", genRest);
+    el.chapterContent.addEventListener("input", updateWordCount);
+    $("#btnPrevChapter").addEventListener("click", prevChapter);
+    $("#btnAddCustom").addEventListener("click", addCustomKeyword);
+    $("#kwCustomInput").addEventListener("keydown", (e) => { if (e.key === "Enter") { e.preventDefault(); addCustomKeyword(); } });
+    $("#btnBackToKeywords").addEventListener("click", () => document.getElementById("keywords").scrollIntoView({ behavior: "smooth" }));
+    $("#btnFeedback").addEventListener("click", openFeedback);
+    $("#feedbackClose").addEventListener("click", closeFeedback);
+    $("#feedbackBackdrop").addEventListener("click", closeFeedback);
+    $("#btnFbCopy").addEventListener("click", copyFeedback);
+    $("#btnFbMail").addEventListener("click", mailFeedback);
     $("#btnExpand").addEventListener("click", () => {
       const full = el.studio.classList.toggle("full");
       $("#btnExpand").textContent = full ? "⛶ 收起编辑" : "⛶ 展开编辑";
