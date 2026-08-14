@@ -142,6 +142,25 @@ window.MozhouWriter = (function () {
     `从这一刻起，{protagonist}在心里立下目标：无论前路多难，都要{goal}。`
   ];
 
+  const POWERUPS = [
+    `体内的气息骤然翻涌，{item}随之发出阵阵嗡鸣。{protagonist}只觉周身经脉通透，仿佛有什么尘封已久的东西，在这一刻轰然觉醒。`,
+    `一道暖流自丹田升起，转瞬流遍四肢百骸。{protagonist}缓缓握拳，感受着掌心愈发浑厚的力量，眼底闪过一丝锋芒。`,
+    `瓶颈，就在这一瞬被冲开。{protagonist}吐出一口浊气，只觉眼前的世界都清明了几分，连{place}的每一处细节都纤毫毕现。`,
+    `苦修多日的积累，终于在这一刻化作突破。{protagonist}不退反进，气势节节攀升，连衣袍都无风自动。`,
+    `{item}的光华流转，似在回应主人的心意。{protagonist}心念一动，力量如臂使指，比之先前何止强了一倍。`,
+    `境界，悄然松动。{protagonist}屏息凝神，任由那股力量冲刷经脉，面上虽不动声色，掌心却已微微发烫。`,
+    `从前的桎梏，在这一刻碎裂开来。{protagonist}长身而起，整个人的气势焕然一新，连目光都锐利了几分。`,
+    `周围的灵气仿佛受到牵引，向{protagonist}聚拢而来。{ta}闭目内视，清晰地感到，自己离{goal}又近了一大截。`
+  ];
+
+  const HOOKS = [
+    `就在此时，{place}外忽然传来一阵急促的脚步声，一个意想不到的身影，正朝这里疾行而来。`,
+    `而谁也没有注意到，暗处有一双眼睛，正把这一切尽收眼底，嘴角勾起一抹意味深长的笑。`,
+    `风，忽然停了。{protagonist}心中警兆陡生，猛地抬头——天边，一道熟悉又陌生的气息正急速逼近。`,
+    `“事情，恐怕没那么简单。”{protagonist}低声自语。话音未落，异变已起。`,
+    `远处，一声钟响悠然荡开，像是某种信号。{place}内外，无数道目光同时亮起。`,
+    `就在所有人以为尘埃落定之际，{item}忽然剧烈震颤起来，指向了一个谁也没想到的方向。`
+  ];
   function events(ch) {
     return [
       `${ch.summary}`,
@@ -185,8 +204,10 @@ window.MozhouWriter = (function () {
     addN(DIALOGUES, 6);
     addN(THOUGHTS, 6);
     addN(CONFLICTS, 6);
+    addN(POWERUPS, 3);
     addN(ATMOS, 5);
     addN(TURNS, 5);
+    if (!isLast) paras.push(fill(pick(rng, HOOKS), ctx));
     paras.push(fill(pick(rng, isLast ? FINAL_CLOSES : CLOSES), ctx));
 
     return paras;

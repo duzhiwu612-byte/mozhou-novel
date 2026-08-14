@@ -9,7 +9,7 @@
   const D = window.MOZHOU_DATA;
   const Engine = window.MozhouEngine;
 
-  const MAX_KW = 8;
+  const MAX_KW = 15;
   const LS_SELECTED = "mozhou_selected";
   const LS_PARAMS = "mozhou_params";
   const LS_TOUR = "mozhou_tour_seen";
@@ -193,8 +193,8 @@
       if (words && words.length) picked.add(words[Math.floor(Math.random() * words.length)]);
     });
     [...picked].forEach(w => state.selected.add(w));
-    if (state.selected.size > 6) {
-      const keep = [...state.selected].slice(0, 6);
+    if (state.selected.size > 10) {
+      const keep = [...state.selected].slice(0, 10);
       state.selected.clear();
       keep.forEach(w => state.selected.add(w));
     }
@@ -729,3 +729,4 @@
 
   document.addEventListener("DOMContentLoaded", init);
 })();
+
