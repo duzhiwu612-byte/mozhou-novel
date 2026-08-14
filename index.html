@@ -1,0 +1,321 @@
+﻿<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8" />
+  <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>墨舟 · 小说创作台 — 一词一世界，下笔即成章</title>
+  <meta name="description" content="挑选小说关键词，一键生成小说标题、简介、分章大纲与完整正文。简约大气的小说创作网站。" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Serif+SC:wght@400;500;600;700;900&family=Noto+Sans+SC:wght@300;400;500;700&display=swap" rel="stylesheet" media="print" onload="this.media='all'" />
+  <noscript><link href="https://fonts.googleapis.com/css2?family=Noto+Serif+SC:wght@400;500;600;700;900&family=Noto+Sans+SC:wght@300;400;500;700&display=swap" rel="stylesheet" /></noscript>
+  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns=%27http://www.w3.org/2000/svg%27 viewBox=%270 0 64 64%27%3E%3Crect width=%2764%27 height=%2764%27 rx=%2714%27 fill=%27%23a63d2b%27/%3E%3Ctext x=%2732%27 y=%2745%27 font-size=%2738%27 text-anchor=%27middle%27 fill=%27white%27 font-family=%27serif%27%3E%E5%A2%A8%3C/text%3E%3C/svg%3E" />
+  <link rel="stylesheet" href="css/style.css" />
+</head>
+<body>
+  <noscript><div style="padding:18px;text-align:center;font-family:sans-serif;color:#a63d2b;">此页面需要启用 JavaScript 才能使用创作功能，请在你的浏览器设置中开启 JavaScript。</div></noscript>
+  <!-- 背景装饰 -->
+  <div class="page-bg" aria-hidden="true">
+    <span class="orb orb-a"></span>
+    <span class="orb orb-b"></span>
+    <span class="grain"></span>
+  </div>
+
+  <!-- 顶部导航 -->
+  <header class="site-header" id="siteHeader">
+    <div class="container header-inner">
+      <a class="brand" href="#top">
+        <span class="brand-seal">墨</span>
+        <span class="brand-name">墨舟<small>小说创作台</small></span>
+      </a>
+      <nav class="main-nav" aria-label="主导航">
+        <a href="#guide">新手引导</a>
+        <a href="#keywords">关键词</a>
+        <a href="#params">创作设定</a>
+        <a href="#result">我的作品</a>
+      </nav>
+      <button class="btn btn-ghost btn-sm" id="btnHelp" type="button">使用帮助</button>
+    </div>
+  </header>
+
+  <main id="top">
+    <!-- 首屏 -->
+    <section class="hero">
+      <div class="container hero-inner">
+        <p class="hero-kicker">一词一世界 · 下笔即成章</p>
+        <h1 class="hero-title">让灵感，<em>落笔成书</em></h1>
+        <p class="hero-sub">挑选几个关键词，墨舟会为你自动生成小说标题、一句话简介、分章大纲与完整小说正文。<br class="only-wide" />零门槛，开始你的第一本小说。</p>
+        <div class="hero-actions">
+          <button class="btn btn-primary" id="btnStart" type="button">立即开始创作</button>
+          <button class="btn btn-ghost" id="btnTour" type="button">观看新手引导</button>
+        </div>
+        <div class="hero-stats">
+          <div class="stat"><strong id="statKeywords">120</strong><span>创作关键词</span></div>
+          <div class="stat"><strong id="statGenres">12</strong><span>题材流派</span></div>
+          <div class="stat"><strong>1 秒</strong><span>生成大纲</span></div>
+          <div class="stat"><strong>免费</strong><span>离线可用</span></div>
+        </div>
+      </div>
+    </section>
+
+    <!-- 新手引导 -->
+    <section class="section" id="guide">
+      <div class="container">
+        <div class="section-head">
+          <p class="section-kicker">新手引导</p>
+          <h2 class="section-title">四步，写出你的第一本书</h2>
+          <p class="section-sub">无需写作经验，跟随引导即可完成一次完整创作。</p>
+        </div>
+        <div class="guide-grid">
+          <article class="guide-card">
+            <span class="guide-num">01</span>
+            <h3>挑选关键词</h3>
+            <p>从题材、设定、人物、感情等分类中，勾选你感兴趣的创作关键词，也可以一键随机搭配。</p>
+          </article>
+          <article class="guide-card">
+            <span class="guide-num">02</span>
+            <h3>设定创作风格</h3>
+            <p>选择篇幅长短、叙事视角、文风基调与结局倾向，让故事更贴合你的想象。</p>
+          </article>
+          <article class="guide-card">
+            <span class="guide-num">03</span>
+            <h3>一键生成作品</h3>
+            <p>点击「生成小说」，墨舟将自动产出标题、简介、分章大纲与完整小说正文。</p>
+          </article>
+          <article class="guide-card">
+            <span class="guide-num">04</span>
+            <h3>复制或导出</h3>
+            <p>对结果不满意可重新生成，满意后一键复制或导出为文本 / Markdown 文件。</p>
+          </article>
+        </div>
+        <div class="guide-foot">
+          <button class="btn btn-ghost" id="btnReplayTour" type="button">重新播放引导</button>
+        </div>
+      </div>
+    </section>
+
+    <!-- 关键词 -->
+    <section class="section section-tinted" id="keywords">
+      <div class="container">
+        <div class="section-head">
+          <p class="section-kicker">关键词库</p>
+          <h2 class="section-title">挑选你的创作关键词</h2>
+          <p class="section-sub">点击关键词卡片进行勾选，可多选。关键词越具体，生成的故事越有方向感。</p>
+        </div>
+
+        <div class="kw-toolbar">
+          <div class="kw-tabs" id="kwTabs" role="tablist" aria-label="关键词分类"></div>
+          <button class="btn btn-ghost btn-sm" id="btnRandomMix" type="button">🎲 随机搭配</button>
+        </div>
+
+        <div class="kw-panel">
+          <p class="kw-cat-title" id="kwCatTitle"></p>
+          <div class="kw-grid" id="kwGrid"></div>
+        </div>
+
+        <div class="kw-selected-bar" id="kwSelectedBar">
+          <div class="kw-selected-info">
+            <span class="kw-selected-label">已选关键词</span>
+            <span class="kw-selected-count" id="kwSelectedCount">0 / 8</span>
+          </div>
+          <div class="kw-selected-chips" id="kwSelectedChips"></div>
+          <button class="kw-clear" id="btnClearKw" type="button">清空</button>
+        </div>
+      </div>
+    </section>
+
+    <!-- 创作设定 -->
+    <section class="section" id="params">
+      <div class="container">
+        <div class="section-head">
+          <p class="section-kicker">创作设定</p>
+          <h2 class="section-title">为故事定下基调</h2>
+        </div>
+        <div class="params-grid">
+          <div class="param-group">
+            <label class="param-label">篇幅长度</label>
+            <div class="segmented" data-param="length">
+              <button type="button" data-value="short">短篇</button>
+              <button type="button" data-value="medium" class="active">中篇</button>
+              <button type="button" data-value="long">长篇</button>
+            </div>
+          </div>
+          <div class="param-group">
+            <label class="param-label">叙事视角</label>
+            <div class="segmented" data-param="pov">
+              <button type="button" data-value="third" class="active">第三人称</button>
+              <button type="button" data-value="first">第一人称</button>
+              <button type="button" data-value="dual">双视角</button>
+            </div>
+          </div>
+          <div class="param-group">
+            <label class="param-label">文风基调</label>
+            <div class="segmented" data-param="tone">
+              <button type="button" data-value="auto" class="active">智能适配</button>
+              <button type="button" data-value="cool">冷峻克制</button>
+              <button type="button" data-value="warm">温暖治愈</button>
+              <button type="button" data-value="funny">轻松幽默</button>
+            </div>
+          </div>
+          <div class="param-group">
+            <label class="param-label">结局倾向</label>
+            <div class="segmented" data-param="ending">
+              <button type="button" data-value="he" class="active">圆满 HE</button>
+              <button type="button" data-value="be">意难平 BE</button>
+              <button type="button" data-value="open">开放结局</button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- 创作工作台 -->
+    <section class="section studio-section hidden" id="studio">
+      <div class="container">
+        <div class="studio-card">
+          <!-- 第一步：确认并微调大纲 -->
+          <div id="outlineStage">
+            <div class="section-head studio-head">
+              <p class="section-kicker">创作工作台 · 第一步</p>
+              <h2 class="section-title">确认并微调大纲</h2>
+              <p class="section-sub">可以直接采用生成结果，也可以修改书名、简介与每章梗概后再继续。</p>
+            </div>
+            <div class="book-meta-edit">
+              <div class="field">
+                <label for="bookTitle">书名</label>
+                <input id="bookTitle" type="text" />
+              </div>
+              <div class="field">
+                <label for="bookLogline">一句话简介</label>
+                <input id="bookLogline" type="text" />
+              </div>
+              <div class="field field-full">
+                <label for="bookSynopsis">故事简介</label>
+                <textarea id="bookSynopsis" rows="3"></textarea>
+              </div>
+            </div>
+            <p class="outline-editor-hint">点击章节标题或梗概即可编辑</p>
+            <div class="outline-editor" id="outlineEditor"></div>
+            <div class="studio-actions">
+              <button class="btn btn-primary" id="btnGenAll" type="button">直接生成全文 ✦</button>
+              <button class="btn btn-ghost" id="btnStartChapters" type="button">开始逐章生成</button>
+            </div>
+          </div>
+
+          <!-- 第二步：逐章精修 -->
+          <div id="chapterStage" class="hidden">
+            <div class="section-head studio-head">
+              <p class="section-kicker">创作工作台 · 第二步</p>
+              <h2 class="section-title">逐章精修</h2>
+              <p class="section-sub" id="chapterProgress">第 1 / 12 章</p>
+            </div>
+            <div class="chapter-editor">
+              <div class="field">
+                <label for="chapterTitle">章节标题</label>
+                <input id="chapterTitle" type="text" />
+              </div>
+              <div class="field field-full">
+                <label for="chapterContent">正文（点击可直接编辑，支持微调）</label>
+                <textarea id="chapterContent" rows="22" spellcheck="false"></textarea>
+              </div>
+            </div>
+            <div class="studio-actions">
+              <button class="btn btn-ghost" id="btnRegenChapter" type="button">↻ 重新生成本章</button>
+              <button class="btn btn-primary" id="btnNextChapter" type="button">采用本章，生成下一章</button>
+              <button class="btn btn-ghost" id="btnGenRest" type="button">一键生成剩余章节</button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- 生成操作条 -->
+    <div class="generate-bar" id="generateBar">
+      <div class="container generate-inner">
+        <div class="generate-summary" id="generateSummary">尚未选择关键词</div>
+        <button class="btn btn-primary btn-lg" id="btnGenerate" type="button">生成大纲 ✦</button>
+      </div>
+    </div>
+
+    <!-- 创作结果 -->
+    <section class="section result-section hidden" id="result">
+      <div class="container">
+        <div class="section-head">
+          <p class="section-kicker">创作成果</p>
+          <h2 class="section-title">你的作品</h2>
+        </div>
+
+        <div class="result-card">
+          <div class="result-top">
+            <div class="result-meta" id="resultMeta"></div>
+            <div class="result-actions">
+              <button class="btn btn-ghost btn-sm" id="btnRegen" type="button">↻ 重新生成</button>
+              <button class="btn btn-ghost btn-sm" id="btnRerollTitle" type="button">换一批标题</button>
+              <button class="btn btn-ghost btn-sm" id="btnCopy" type="button">复制全文</button>
+              <button class="btn btn-ghost btn-sm" id="btnExport" type="button">导出 MD</button>
+              <button class="btn btn-ghost btn-sm" id="btnExportTxt" type="button">导出 TXT</button>
+              <button class="btn btn-ghost btn-sm" id="btnExportDocx" type="button">导出 Word</button>
+            </div>
+          </div>
+
+          <div class="result-book">
+            <h3 class="result-title" id="resultTitle"></h3>
+            <p class="result-logline" id="resultLogline"></p>
+          </div>
+
+          <div class="result-tabs" role="tablist">
+            <button class="result-tab active" data-view="outline" type="button">分章大纲</button>
+            <button class="result-tab" data-view="content" type="button">完整小说</button>
+          </div>
+
+          <div class="result-body" id="resultBody"></div>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <footer class="site-footer">
+    <div class="container footer-inner">
+      <p>墨舟 · 小说创作台 —— 所有生成内容均为示例文本，可自由修改与商用。</p>
+      <p class="footer-note">一词一世界，下笔即成章。</p>
+    </div>
+  </footer>
+
+  <!-- 新手引导浮层 -->
+  <div class="tour" id="tour" hidden>
+    <div class="tour-backdrop"></div>
+    <div class="tour-dialog" role="dialog" aria-modal="true" aria-labelledby="tourTitle">
+      <div class="tour-media">
+        <div class="tour-art" id="tourArt">01</div>
+      </div>
+      <div class="tour-content">
+        <p class="tour-step" id="tourStep">第 1 步 / 共 4 步</p>
+        <h3 class="tour-title" id="tourTitle">挑选关键词</h3>
+        <p class="tour-text" id="tourText">从题材、设定、人物、感情等分类中勾选关键词，故事方向由你定义。</p>
+        <div class="tour-nav">
+          <button class="btn btn-ghost" id="tourSkip" type="button">跳过引导</button>
+          <div class="tour-dots" id="tourDots"></div>
+          <button class="btn btn-primary" id="tourNext" type="button">下一步</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 轻提示 -->
+  <div class="toast" id="toast" role="status"></div>
+
+  <script src="js/data.js"></script>
+  <script src="js/writer.js"></script>
+  <script src="js/engine.js"></script>
+  <script src="js/app.js"></script>
+</body>
+</html>
+
+
+
+
+
+
+
+
