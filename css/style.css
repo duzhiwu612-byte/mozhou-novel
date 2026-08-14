@@ -464,3 +464,5 @@ h1, h2, h3, h4 { margin: 0; font-family: var(--serif); font-weight: 700; line-he
 
 .btn:disabled { opacity: .45; cursor: not-allowed; box-shadow: none; }
 .kw-selected-chip.custom-chip { background: #e6eef0; color: #2f6f75; }
+
+.feedback-note { margin: 4px 0 0; font-size: 12px; color: var(--ink-3); text-align: right; }

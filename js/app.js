@@ -15,6 +15,7 @@
   const LS_TOUR = "mozhou_tour_seen";
   const LS_DRAFT = "mozhou_draft";
   const LS_CUSTOM = "mozhou_custom";
+  const FB_EMAIL = "duzhiwu612@gmail.com";
 
   const state = {
     activeCat: "world",
@@ -48,7 +49,7 @@
     chapterProgress: $("#chapterProgress"), chapterTitle: $("#chapterTitle"), chapterContent: $("#chapterContent"),
     chapterWordCount: $("#chapterWordCount"), kwCustomInput: $("#kwCustomInput"), btnAddCustom: $("#btnAddCustom"),
     btnPrevChapter: $("#btnPrevChapter"), btnBackToKeywords: $("#btnBackToKeywords"),
-    feedback: $("#feedback"), fbContact: $("#fbContact"), fbEmail: $("#fbEmail"), fbContent: $("#fbContent"),
+    feedback: $("#feedback"), fbContact: $("#fbContact"), fbContent: $("#fbContent"),
     btnFbCopy: $("#btnFbCopy"), btnFbMail: $("#btnFbMail"),
     toast: $("#toast"), tour: $("#tour"), tourArt: $("#tourArt"),
     tourStepLabel: $("#tourStep"), tourTitle: $("#tourTitle"), tourText: $("#tourText"),
@@ -514,11 +515,7 @@
   }
 
   /* ---------- 意见反馈 ---------- */
-  function openFeedback() {
-    el.feedback.hidden = false;
-    const saved = (() => { try { return localStorage.getItem("mozhou_fb_email"); } catch (e) { return ""; } })();
-    if (saved) el.fbEmail.value = saved;
-  }
+  function openFeedback() { el.feedback.hidden = false; }
   function closeFeedback() { el.feedback.hidden = true; }
   function feedbackPayload() {
     return { contact: el.fbContact.value.trim(), content: el.fbContent.value.trim() };
@@ -529,16 +526,37 @@
     const text = `【墨舟小说创作台 · 用户反馈】\n联系方式：${p.contact || "未填写"}\n反馈内容：\n${p.content}\n`;
     copyText(text, "已复制反馈内容，可粘贴发送给我");
   }
-  function mailFeedback() {
-    const p = feedbackPayload();
-    if (!p.content) { toast("请先填写反馈内容"); return; }
-    const email = el.fbEmail.value.trim();
-    if (!email) { toast("请先填写接收邮箱"); return; }
-    try { localStorage.setItem("mozhou_fb_email", email); } catch (e) {}
+  function mailFallback(p) {
     const subject = encodeURIComponent("墨舟小说创作台 · 用户反馈");
     const body = encodeURIComponent(`联系方式：${p.contact || "未填写"}\n\n反馈内容：\n${p.content}`);
-    window.location.href = `mailto:${email}?subject=${subject}&body=${body}`;
-    toast("已打开邮件客户端");
+    window.location.href = `mailto:${FB_EMAIL}?subject=${subject}&body=${body}`;
+    toast("已打开邮件客户端，请点击发送");
+  }
+  function sendFeedback() {
+    const p = feedbackPayload();
+    if (!p.content) { toast("请先填写反馈内容"); return; }
+    const btn = el.btnFbMail;
+    btn.disabled = true;
+    btn.textContent = "发送中…";
+    const payload = { _subject: "墨舟小说创作台 · 用户反馈", contact: p.contact || "未填写", message: p.content };
+    const controller = new AbortController();
+    const timer = setTimeout(() => controller.abort(), 8000);
+    fetch("https://formsubmit.co/ajax/duzhiwu612@gmail.com", {
+      method: "POST",
+      headers: { "Content-Type": "application/json", "Accept": "application/json" },
+      body: JSON.stringify(payload),
+      signal: controller.signal
+    }).then(r => {
+      clearTimeout(timer);
+      btn.disabled = false;
+      btn.textContent = "发送反馈";
+      if (r.ok) { toast("反馈已发送，谢谢！"); el.fbContent.value = ""; el.fbContact.value = ""; }
+      else { mailFallback(p); }
+    }).catch(() => {
+      btn.disabled = false;
+      btn.textContent = "发送反馈";
+      mailFallback(p);
+    });
   }
   /* ---------- 渲染最终结果 ---------- */
   function renderResult() {
@@ -793,7 +811,7 @@
     $("#feedbackClose").addEventListener("click", closeFeedback);
     $("#feedbackBackdrop").addEventListener("click", closeFeedback);
     $("#btnFbCopy").addEventListener("click", copyFeedback);
-    $("#btnFbMail").addEventListener("click", mailFeedback);
+    $("#btnFbMail").addEventListener("click", sendFeedback);
     $("#btnExpand").addEventListener("click", () => {
       const full = el.studio.classList.toggle("full");
       $("#btnExpand").textContent = full ? "⛶ 收起编辑" : "⛶ 展开编辑";
